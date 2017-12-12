@@ -2,15 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c55b62f8-96b1-4a62-893d-be3ffd0ab0f8" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/Image-Captioning.iml" afterPath="$PROJECT_DIR$/.idea/Image-Captioning.iml" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change beforePath="$PROJECT_DIR$/.ipynb_checkpoints/image_test_keras2-checkpoint.ipynb" afterPath="$PROJECT_DIR$/.ipynb_checkpoints/image_test_keras2-checkpoint.ipynb" />
       <change beforePath="$PROJECT_DIR$/Imagecaptioning.py" afterPath="$PROJECT_DIR$/Imagecaptioning.py" />
       <change beforePath="$PROJECT_DIR$/image_test_keras2.ipynb" afterPath="$PROJECT_DIR$/image_test_keras2.ipynb" />
-      <change beforePath="$PROJECT_DIR$/time_inceptionV3_1.5987_loss.h5" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/time_inceptionV3_12_6_18.h5" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/time_inceptionV3_12_8_15.h5" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/val_dict_file.pkl" afterPath="" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -27,8 +22,8 @@
       <file leaf-file-name="Imagecaptioning.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Imagecaptioning.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-836">
-              <caret line="103" column="21" lean-forward="true" selection-start-line="103" selection-start-column="21" selection-end-line="103" selection-end-column="21" />
+            <state relative-caret-position="858">
+              <caret line="39" column="13" lean-forward="false" selection-start-line="39" selection-start-column="13" selection-end-line="39" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -398,8 +393,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Imagecaptioning.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-836">
-          <caret line="103" column="21" lean-forward="true" selection-start-line="103" selection-start-column="21" selection-end-line="103" selection-end-column="21" />
+        <state relative-caret-position="858">
+          <caret line="39" column="13" lean-forward="false" selection-start-line="39" selection-start-column="13" selection-end-line="39" selection-end-column="13" />
           <folding />
         </state>
       </provider>

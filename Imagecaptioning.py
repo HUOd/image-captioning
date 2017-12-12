@@ -28,11 +28,16 @@ for row in captions:
 #print(imag_dict)
 
 import glob
-if cmd_personal_test:
+if cmd_personal_test == 1:
     imag = 'Flicker8k_Dataset/PersonaltestImages/'
+    images = glob.glob(imag+'*.jpg')
 else:
     imag = 'Flicker8k_Dataset/Flicker8k_Dataset/'
-images = glob.glob(imag+'*.jpg')
+    images = glob.glob(imag+'*.jpg')
+    f = open('Flicker8k_text/PersonaltestImages.txt', 'w')
+    for i in len(images):
+        f.write(i[len(imag):])
+    f.close()
 #print(imag)
 
 for i in range(len(images)):
