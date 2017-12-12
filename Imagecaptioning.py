@@ -1,4 +1,17 @@
+import argparse
 
+parser = argparse.ArgumentParser()
+
+parser.add_argument('-p', action = 'store_true', default = False, dest = 'cmd_personal_test', help = 'use personal test image')
+parser.add_argument('-i', action = 'store', default = 0, dest = 'cmd_image_index', help = 'image index', type = int)
+
+parserResults = parser.parse_args()
+
+cmd_personal_test = parserResults.cmd_personal_test
+cmd_image_index = parserResults.cmd_image_index
+
+import os
+os.environ["KERAS_BACKEND"] = "tensorflow"
 
 token = 'Flicker8k_text/Flickr8k.token.txt'
 
@@ -12,12 +25,15 @@ for row in captions:
         imag_dict[row[0]].append(row[1])
     else:
         imag_dict[row[0]] = [row[1]]
-
+#print(imag_dict)
 
 import glob
-
-imag = 'Flicker8k_Dataset/Flicker8k_Dataset/'
+if cmd_personal_test:
+    imag = 'Flicker8k_Dataset/PersonaltestImages/'
+else:
+    imag = 'Flicker8k_Dataset/Flicker8k_Dataset/'
 images = glob.glob(imag+'*.jpg')
+#print(imag)
 
 for i in range(len(images)):
     if images[i].find('') >= 0:
@@ -40,13 +56,9 @@ val_images_file = 'Flicker8k_text/Flickr_8k.devImages.txt'
 val_images_set = set(open(val_images_file, 'r').read().strip().split('\n'))
 val_images = split_data(val_images_set)
 
-test_images_file = 'Flicker8k_text/Flickr_8k.testImages.txt'
-test_images = set(open(test_images_file, 'r').read().strip().split('\n'))
-test_images = split_data(test_images)
+#from PIL import Image
 
-from PIL import Image
-
-Image.open(train_images[0])
+# Image.open(train_images[0])
 
 def preprocess_input(x):
     x /= 255.
@@ -87,43 +99,60 @@ def encode(image):
     temp_enc = model_new.predict(image)
     temp_enc = np.reshape(temp_enc, temp_enc.shape[1])
     return temp_enc
+#print("good")
 
 from tqdm import tqdm
-
+import tensorflow as tf
 encoding_train = {}
-for oneimage in tqdm(train_images):
-    encoding_train[oneimage[len(imag):]] = encode(oneimage)
+# for oneimage in tqdm(train_images):
+#     encoding_train[oneimage[len(imag):]] = encode(oneimage)
 
 import pickle
-with open("encoded_images_inceptionV3.p", "wb") as encoded_pickle:
-    pickle.dump(encoding_train, encoded_pickle)
+# with open("encoded_images_inceptionV3.p", "wb") as encoded_pickle:
+#     pickle.dump(encoding_train, encoded_pickle)
 
-encoding_train = pickle.load(open('encoded_images_inceptionV3.p', 'rb'))
+#test_images_file = 'Flicker8k_text/Flickr_8k.testImages.txt
+
+
+if cmd_personal_test:
+    test_images_file = 'Flicker8k_text/PersonaltestImages.txt'
+else:
+    test_images_file = 'Flicker8k_text/Flickr_8k.testImages.txt'
+test_images_set = set(open(test_images_file, 'r').read().strip().split('\n'))
+#print(test_images_set)
+
+test_images = split_data(test_images_set)
+#test_images = split_data(test_images_set)
+#print(test_images)
 
 encoding_test = {}
-for oneimage in tqdm(test_images):
-    encoding_test[oneimage[len(imag):]] = encode(oneimage)
+from tqdm import tqdm
 
-with open("encoded_images_test_inceptionV3.p", "wb") as encoded_pickle:
-    pickle.dump(encoding_test, encoded_pickle)
+if cmd_personal_test:
+    for oneimage in tqdm(test_images):
+        encoding_test[oneimage[len(imag):]] = encode(oneimage)
+    with open("encoded_images_personaltest_inceptionV3.p", "wb") as encoded_pickle:
+        pickle.dump(encoding_test, encoded_pickle)
+    encoding_test = pickle.load(open('encoded_images_personaltest_inceptionV3.p', 'rb'))
+else:
+    encoding_test = pickle.load(open('encoded_images_test_inceptionV3.p', 'rb'))
 
-encoding_test = pickle.load(open('encoded_images_test_inceptionV3.p', 'rb'))
+import pickle
+encoding_train = pickle.load(open('encoded_images_inceptionV3.p', 'rb'))
 
-train_dict = {}
-for i in train_images:
-    if i[len(imag):] in imag_dict:
-        train_dict[i] = imag_dict[i[len(imag):]]
+# train_dict = {}
+# for i in train_images:
+#     if i[len(imag):] in imag_dict:
+#         train_dict[i] = imag_dict[i[len(imag):]]
+# print(train_dict)
 
+# train_dict_file = open('train_dict_file.pkl', 'wb')
+# pickle.dump(train_dict, train_dict_file)
+# train_dict_file.close()
 
-val_dict = {}
-for i in val_images:
-    if i[len(imag):] in imag_dict:
-        val_dict[i] = imag_dict[i[len(imag):]]
-
-test_dict = {}
-for i in test_images:
-    if i[len(imag):] in imag_dict:
-        test_dict[i] = imag_dict[i[len(imag):]]
+train_dict_file = open('train_dict_file.pkl', 'rb')
+train_dict = pickle.load(train_dict_file)
+train_dict_file.close()
 
 caps = []
 for key, val in train_dict.items():
@@ -132,22 +161,22 @@ for key, val in train_dict.items():
 
 words = [i.split() for i in caps]
 
-unique = []
-for i in words:
-    unique.extend(i)
+# unique = []
+# for i in words:
+#     unique.extend(i)
 
-unique = list(set(unique))
+# unique = list(set(unique))
+# with open("unique.p", "wb") as pickle_d:
+#     pickle.dump(unique, pickle_d)
 
-with open("unique.p", "wb") as pickle_d:
-    pickle.dump(unique, pickle_d)
 
 unique = pickle.load(open('unique.p', 'rb'))
 
-word2idx = {val:index for index, val in enumerate(unique)}
-idx2word = {index:val for index, val in enumerate(unique)}
+word2idx = {val: index for index, val in enumerate(unique)}
+idx2word = {index: val for index, val in enumerate(unique)}
 
-print(word2idx['<start>'])
-print(idx2word[5553])
+#print(word2idx['<start>'])
+#print(idx2word[5553])
 
 max_len = 0
 for c in caps:
@@ -156,19 +185,12 @@ for c in caps:
         max_len = len(c)
 
 vocab_size = len(unique)
-
-f = open('flickr8k_training_dataset.txt', 'w')
-f.write("image_id\tcaptions\n")
-
-for key, val in train_dict.items():
-    for i in val:
-        f.write(key[len(imag):] + "\t" + "<start> " + i +" <end>" + "\n")
-
-f.close()
+#print(len(unique), max_len)
 import pandas as pd
 df = pd.read_csv('flickr8k_training_dataset.txt', delimiter='\t')
 
 c = [i for i in df['captions']]
+
 imgs = [i for i in df['image_id']]
 
 samples_per_epoch = 0
@@ -176,6 +198,8 @@ for ca in caps:
     samples_per_epoch += len(ca.split()) - 1
 
 from keras.preprocessing import sequence
+
+
 def data_generator(batch_size=32):
     partial_caps = []
     next_words = []
@@ -196,62 +220,80 @@ def data_generator(batch_size=32):
         for j, text in enumerate(c):
             current_image = encoding_train[imgs[j]]
             for i in range(len(text.split()) - 1):
-                 count += 1
+                count += 1
 
-                 partial = [word2idx[txt] for txt in text.split()[:i + 1]]
-                 partial_caps.append(partial)
+                partial = [word2idx[txt] for txt in text.split()[:i + 1]]
+                partial_caps.append(partial)
 
-                 # Initializing with zeros to create a one-hot encoding matrix
-                 # This is what we have to predict
-                 # Hence initializing it with vocab_size length
-                 n = np.zeros(vocab_size)
-                 # Setting the next word to 1 in the one-hot encoded matrix
-                 n[word2idx[text.split()[i + 1]]] = 1
-                 next_words.append(n)
+                # Initializing with zeros to create a one-hot encoding matrix
+                # This is what we have to predict
+                # Hence initializing it with vocab_size length
+                n = np.zeros(vocab_size)
+                # Setting the next word to 1 in the one-hot encoded matrix
+                n[word2idx[text.split()[i + 1]]] = 1
+                next_words.append(n)
 
-                 images.append(current_image)
+                images.append(current_image)
 
-                 if count >= batch_size:
-                     next_words = np.asarray(next_words)
-                     images = np.asarray(images)
-                     partial_caps = sequence.pad_sequences(partial_caps, maxlen=max_len, padding='post')
-                     yield [[images, partial_caps], next_words]
-                     partial_caps = []
-                     next_words = []
-                     images = []
-                     count = 0
+                if count >= batch_size:
+                    next_words = np.asarray(next_words)
+                    images = np.asarray(images)
+                    partial_caps = sequence.pad_sequences(partial_caps, maxlen=max_len, padding='post')
+                    yield [[images, partial_caps], next_words]
+                    partial_caps = []
+                    next_words = []
+                    images = []
+                    count = 0
 
+import os
+os.environ["KERAS_BACKEND"] = "tensorflow"
+import keras
 from keras.models import Sequential
-from keras.layers import LSTM, Embedding, TimeDistributed, Dense, RepeatVector, Merge, Activation, Flatten, Concatenate
+from keras.layers import LSTM, Embedding, Input, TimeDistributed, Dense, RepeatVector,merge, Merge, Activation, Flatten,concatenate
 from keras.optimizers import Adam, RMSprop
 from keras.layers.wrappers import Bidirectional
 from keras.preprocessing import image
 from keras.preprocessing import sequence
 
-embedding_size = 300
+embedding_size = 256
+
 
 image_model = Sequential([
         Dense(embedding_size, input_shape=(2048,), activation='relu'),
         RepeatVector(max_len)
     ])
 
+#image_model.summary()
+#image_model.input_shape
+
 caption_model = Sequential([
         Embedding(vocab_size, embedding_size, input_length=max_len),
         LSTM(256, return_sequences=True),
-        TimeDistributed(Dense(300))
+        TimeDistributed(Dense(256))
     ])
 
-final_model = Sequential([
-        Merge([image_model, caption_model], mode='concat', concat_axis=1),
-        Bidirectional(LSTM(256, return_sequences=False)),
-        Dense(vocab_size),
-        Activation('softmax')
-    ])
+# caption_model.summary()
+# caption_model.input_shape
 
-final_model.compile(loss='categorical_crossentropy', optimizer=RMSprop(), metrics=['accuracy'])
+model_output = concatenate([image_model.output,caption_model.output], axis = 2)
 
-final_model.fit_generator(data_generator(batch_size=128), samples_per_epoch=samples_per_epoch, nb_epoch=1,
-                          verbose=2)
+Out = Bidirectional(LSTM(256, return_sequences=False))(model_output)
+Out = Dense(vocab_size)(Out)
+Out = Activation('softmax')(Out)
+
+with tf.device('/device:GPU:0'):
+    final_model = Model([image_model.input, caption_model.input], Out)
+
+final_model.compile(loss='categorical_crossentropy', optimizer=Adam(), metrics=['accuracy'])
+#final_model.summary()
+
+# with tf.device('/device:GPU:0'):
+#     final_model.fit_generator(data_generator(batch_size=256), steps_per_epoch=samples_per_epoch, nb_epoch=1,
+#                                   verbose=1)
+
+#final_model.save_weights('time_inceptionV3_12_11_13.h5')
+
+final_model.load_weights('time_inceptionV3_12_11_13.h5')
 
 
 def predict_captions(image):
@@ -312,11 +354,17 @@ def beam_search_predictions(image, beam_index=3):
     final_caption = ' '.join(final_caption[1:])
     return final_caption
 
-try_image = test_images[0]
-Image.open(try_image)
+try_image = test_images[cmd_image_index]
+print(test_images[cmd_image_index])
+# from PIL import Image
+# im = Image.open(try_image)
+# im.show()
 
-print ('Normal Max search:', predict_captions(try_image))
-print ('Beam Search, k=3:', beam_search_predictions(try_image, beam_index=3))
-print ('Beam Search, k=5:', beam_search_predictions(try_image, beam_index=5))
-print ('Beam Search, k=7:', beam_search_predictions(try_image, beam_index=7))
-print("good")
+# print ('Normal Max search:', predict_captions(try_image))
+# print ('Beam Search, k=3:', beam_search_predictions(try_image, beam_index=3))
+# print ('Beam Search, k=5:', beam_search_predictions(try_image, beam_index=5))
+# print ('Beam Search, k=7:', beam_search_predictions(try_image, beam_index=7))
+
+f = open('Captioning_result.txt', 'w')
+f.write(beam_search_predictions(try_image, beam_index=7))
+f.close()
