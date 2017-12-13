@@ -35,7 +35,7 @@ else:
     imag = 'Flicker8k_Dataset/Flicker8k_Dataset/'
     images = glob.glob(imag+'*.jpg')
     f = open('Flicker8k_text/PersonaltestImages.txt', 'w')
-    for i in len(images):
+    for i in images:
         f.write(i[len(imag):])
     f.close()
 #print(imag)
